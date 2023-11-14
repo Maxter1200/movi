@@ -1,19 +1,28 @@
+import { NavLink } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 
 import { CartWidget } from "./CartWidget";
-import iconLogo from "../assets/icon/logo.svg"
+import iconLogo from "../assets/icon/logo.svg";
+import data from "../assets/data/movi.json";
 
+const dataCategories = new Set(data.map((item) => item.category));
 export const NavBar = () => {
     return (
         <Navbar bg="light" data-bs-theme="light">
             <Container>
-                <Navbar.Brand href="#home"><img src={iconLogo} alt="Logo movi" />movi</Navbar.Brand>
-                <Nav className="me-auto">
-                    <Nav.Link href="#cel">Celulares</Nav.Link>
-                    <Nav.Link href="#tablet">Tablets</Nav.Link>
-                    <Nav.Link href="#fixing">Reparación</Nav.Link>
+                <NavLink to="/" className="navbar-brand"><img src={iconLogo} alt="Logo movi" />movi</NavLink>
+                <Nav className="me-auto gap-3">
+                    <DropdownButton id="navbarCategories" title="Categorías">
+                        {[...dataCategories].map(category => 
+                            <NavLink className="dropdown-item" key={category} to={`/category/${category.toLowerCase()}`}>
+                                {category}
+                            </NavLink>
+                        )}
+                    </DropdownButton>
                 </Nav>
                 <CartWidget />
             </Container>
