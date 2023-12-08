@@ -27,7 +27,7 @@ En este proyecto se creó un E-commerce centrado en la venta de dispositivos mó
 
 ## Demo
 
-![](link)
+![](https://github.com/maty-vivas/movi/blob/main/demo.gif)
 
 
 ## Autor
