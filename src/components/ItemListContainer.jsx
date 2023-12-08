@@ -1,10 +1,11 @@
-import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import Container from 'react-bootstrap/Container';
-import Spinner from 'react-bootstrap/Spinner';
+import { useParams } from 'react-router-dom';
+
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { Container, Spinner } from 'react-bootstrap';
 
 import ItemList from './ItemList';
-import data from '../assets/data/movi.json'
+// import data from "../assets/data/movi.json";
 
 export const ItemListContainer = (props) => {
     const [items, setItems] = useState([]);
@@ -13,21 +14,31 @@ export const ItemListContainer = (props) => {
 
     useEffect(() => {
         setLoading(true);
+        const db = getFirestore();
+        const itemsCollection = collection(db, "items");
 
-        const prom = new Promise((resolve, reject) => {
-            setTimeout(() => {resolve(data)}, 2000);
-        });
-
-        prom.then((res) => {
+        getDocs(itemsCollection)
+        .then(res => {
+            const itemsDB = res.docs.map(doc => ({ id: doc.id, ...doc.data() }))
             if(!id)
-                setItems(res);
+                setItems(itemsDB);
             else
             {
-                const itemsByCategory = res.filter(item => item.category.toLowerCase() === id);
+                const itemsByCategory = itemsDB.filter(item => item.category.toLowerCase() === id);
                 setItems(itemsByCategory);
             }
         })
-        .finally((res) => setLoading(false));
+        // SI SE EXCEDE LA CUOTA DE FIRESTORE SE USA LA DATA LOCAL
+        // .catch(err => {
+        //     if(!id)
+        //         setItems(data);
+        //     else
+        //     {
+        //         const itemsByCategory = data.filter(item => item.category.toLowerCase() === id);
+        //         setItems(itemsByCategory);
+        //     }
+        // })
+        .finally(() => setLoading(false));
 
     }, [id]);
 

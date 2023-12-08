@@ -1,26 +1,44 @@
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
+import { useNavigate } from 'react-router-dom';
+
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { Container, Nav, Navbar, Dropdown, DropdownButton } from 'react-bootstrap';
 
 import { CartWidget } from "./CartWidget";
 import iconLogo from "../assets/icon/logo.svg";
-import data from "../assets/data/movi.json";
+// import data from "../assets/data/movi.json";
 
-const dataCategories = new Set(data.map((item) => item.category));
 export const NavBar = () => {
+    const navigate = useNavigate();
+    const [ categories, setCategories ] = useState([]);
+
+    const db = getFirestore();
+    const itemsCollection = collection(db, "items");
+
+    getDocs(itemsCollection)
+    .then(res => {
+        let aux = new Set(res.docs.map(doc => doc.data().category));
+        aux = [...aux];
+        setCategories(aux);
+    })
+    // SI SE EXCEDE LA CUOTA DE FIRESTORE SE USA LA DATA LOCAL
+    // .catch(err => {
+    //     let aux = new Set(data.map(prod => prod.category));
+    //     aux = [...aux];
+    //     setCategories(aux);
+    // });
+
     return (
-        <Navbar bg="light" data-bs-theme="light">
+        <Navbar>
             <Container>
-                <NavLink to="/" className="navbar-brand"><img src={iconLogo} alt="Logo movi" />movi</NavLink>
+                <NavLink to="/" className="navbar-brand"><img src={iconLogo} height={36} alt="Logo movi" />movi</NavLink>
                 <Nav className="me-auto gap-3">
                     <DropdownButton id="navbarCategories" title="Categorías">
-                        {[...dataCategories].map(category => 
-                            <NavLink className="dropdown-item" key={category} to={`/category/${category.toLowerCase()}`}>
+                        {categories.map(category => 
+                            <Dropdown.Item key={category} onClick={() => navigate(`/category/${category.toLowerCase()}`)}>
                                 {category}
-                            </NavLink>
+                            </Dropdown.Item>
                         )}
                     </DropdownButton>
                 </Nav>

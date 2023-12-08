@@ -1,10 +1,16 @@
+import { Link } from 'react-router-dom';
+import { useContext } from 'react';
+import { CartContext } from '../contexts/CartContext';
+
 import iconCart from '../assets/icon/cart.svg'
 
 export const CartWidget = () => {
+    const { cartCount } = useContext(CartContext);
+    
     return (
-        <>
-            <img src={iconCart} alt="Icono Carrito"/>
-            <p>99</p>
-        </>
+        <Link to="/cart">
+            <img src={iconCart} height={32} alt="Icono Carrito"/>
+            <span>{cartCount}</span>
+        </Link>
     );
 };
